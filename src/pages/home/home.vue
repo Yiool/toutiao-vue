@@ -9,19 +9,17 @@
       </div>
     </div>
     <div class="tabs">
-      <div class="title"  @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend">
+      <div class="title" @touchstart="touchstart" @touchmove="touchmove" @touchend="touchend">
         <ul class="">
           <li v-for="(item,i) in tabsTitle" @click="switchChannel(item)">
             <router-link :to="{path:'/home/channel',query:{channel:item}}">{{item}}</router-link>
           </li>
         </ul>
       </div>
-      <div class="content">
-        <transition name="fade">
-          <keep-alive>
-            <router-view :channelDatas='sendDatas'></router-view>
-          </keep-alive>
-        </transition>
+      <div class="detail-content">
+        <!-- <keep-alive> -->
+          <router-view :channelDatas='sendDatas'></router-view>
+        <!-- </keep-alive> -->
       </div>
     </div>
   </div>
@@ -42,28 +40,28 @@ export default {
     return {
       tabsTitle: [],
       tabsContent: [],
-      sendDatas: [],
+      sendDatas: []  
     }
   },
   methods: {
     switchChannel(channel) {
+      console.log(channel);
       const APP_KEY = "1643de435f1495f7";
       this.axios.get('/api/get?channel=' + channel + '&start=0&num=10&appkey=1643de435f1495f7').then((response) => {
         let resultArr = response.data.result.list;
         this.sendDatas = resultArr;
+        console.log(this.sendDatas);
       });
     },
     touchstart(e) {
       this.getWidth();
       startX = e.touches[0].pageX;
-      // console.log(startX);
     },
     touchmove(e) {
       let ulBox = document.querySelector(".title ul");
       endX = e.touches[0].pageX;
       distanceX = endX - startX;
       needMove = distanceX + currentX;
-      console.log(distanceX);
       if (needMove < maxX && needMove > minX) {
         ulBox.style.transition = "none";
         ulBox.style.transform = "translateX(" + needMove + "px)";
@@ -75,19 +73,17 @@ export default {
         ulBox.style.transition = "all .3s";
         ulBox.style.transform = "translateX(0)";
         currentX = 0;
-      } else if ( needMove <= -298) {
+      } else if (needMove <= -298) {
         ulBox.style.transition = "all .3s";
         ulBox.style.transform = "translateX(-260px)";
         currentX = -260;
       } else {
         currentX = needMove;
       }
-      
-      // console.log(currentX,distanceX);
+
       startX = 0;
       endX = 0;
       distanceX = 0;
-      // isMove = false;
     },
     getWidth() {
       let ulWidth = 0;
@@ -101,7 +97,7 @@ export default {
     }
   },
   created() {
-    //数据接口参数
+    //数据接口固定参数
     const APP_KEY = "1643de435f1495f7";
     const DEFAULT_CHANNEL = "头条";
 
@@ -154,7 +150,7 @@ export default {
   overflow: hidden;
 
   .title {
-    height: 30px;
+    height: 29px;
     line-height: 30px;
     background: #eee;
     overflow: hidden;
@@ -166,38 +162,6 @@ export default {
     }
     li a.router-link-exact-active {
       color: #F17070;
-    }
-  }
-  .content>ul>li {
-    width: 100%;
-    float: left;
-    padding: 10px;
-    ul li {
-      display: flex;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-      .news-detail {
-        flex: 1;
-        margin-right: 5px;
-        h3 {
-          font-size: 14px;
-          line-height: 30px;
-          font-weight: 400;
-          color: #000;
-        }
-        .extra {
-          font-size: 12px;
-          color: #999;
-        }
-      }
-      .news-pic {
-        width: 65px;
-        height: 45px;
-        img {
-          width: 65px;
-          height: 45px;
-        }
-      }
     }
   }
 }
